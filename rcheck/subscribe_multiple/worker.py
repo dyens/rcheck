@@ -5,11 +5,11 @@ import logging
 from threading import Thread
 from queue import Queue, Empty
 from functools import partial
-from setup import setup, QUEUE_1, QUEUE_2, EXCHANGE
+from setup import setup, QUEUES, EXCHANGE
 
 logger = logging.getLogger(__name__)
 
-MAX_WORKERS = 2
+MAX_WORKERS = len(QUEUES)
 
 
 def do_work(msg):
@@ -92,15 +92,11 @@ class Consumer:
     def _setup_worker(self):
         self._channel.basic_qos(prefetch_count=MAX_WORKERS, global_qos=True)
 
-        self._channel.basic_consume(
-            on_message_callback=partial(self._on_message, connection=self._connection),
-            queue=QUEUE_1,
-        )
-        self._channel.basic_consume(
-            on_message_callback=partial(self._on_message, connection=self._connection),
-            queue=QUEUE_2,
-        )
-
+        for queue in QUEUES:
+            self._channel.basic_consume(
+                on_message_callback=partial(self._on_message, connection=self._connection),
+                queue=queue,
+            )
 
     def run(self):
         print('Start consumer')

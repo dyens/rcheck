@@ -6,7 +6,7 @@ import time
 import json
 from queue import Queue, Empty
 from threading import Thread
-from setup import setup, QUEUE_1, QUEUE_2, EXCHANGE
+from setup import setup, QUEUES, EXCHANGE
 
 QUEUE_SIZE = 5
 
@@ -81,10 +81,9 @@ class Producer:
     def run(self):
 #        time.sleep(0.5)
         print('Start publish')
-        routing_keys = (QUEUE_1, QUEUE_2)
-        for i in range(30):
+        for i in range(30 * len(QUEUES)):
 #            time.sleep(1)
-            routing_key = routing_keys[i % 2]
+            routing_key = QUEUES[i % len(QUEUES)]
             # routing_key = routing_keys[0]
             msg = (i, routing_key)
             self._queue.put(msg)
