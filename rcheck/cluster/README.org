@@ -61,5 +61,12 @@
    #+END_SRC
 
 
+* Start-stop nodes
+
+  #+BEGIN_SRC sh
+    docker-compose -f docker-compose.yml stop rabbit-node1
+    docker-compose -f docker-compose.yml start rabbit-node1
+  #+END_SRC
+
 
 
