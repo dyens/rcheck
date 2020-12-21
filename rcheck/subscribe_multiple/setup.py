@@ -1,5 +1,5 @@
 
-QUEUES_NUMBER = 1000
+QUEUES_NUMBER = 10
 QUEUES = ['sm_queue_%s' % i for i in range(QUEUES_NUMBER)]
 EXCHANGE = 'sm_exchange'
 

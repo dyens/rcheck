@@ -1,0 +1,65 @@
+* Create rabbitmq Cluster
+
+  #+BEGIN_SRC sh
+    docker-compose -f docker-compose.yml  up
+  #+END_SRC
+
+* Setup cluster
+
+** Get images
+   #+BEGIN_SRC sh
+     docker ps
+   #+END_SRC
+
+   #+RESULTS:
+   | CONTAINER    | ID                  | IMAGE                | COMMAND | CREATED | STATUS | PORTS | NAMES |       |                        |                                   |                   |            |            |                         |                          |                        |
+   | 876e25aec4f6 | rabbitmq:management | docker-entrypoint.s… |      41 | minutes | ago    | Up    | About | a     | minute                 | 4369/tcp,                         | 5671/tcp,         | 15671/tcp, | 25672/tcp, | 0.0.0.0:5673->5672/tcp, | 0.0.0.0:15673->15672/tcp | cluster_rabbit-node1_1 |
+   | a02039b9655c | rabbitmq:management | docker-entrypoint.s… |      41 | minutes | ago    | Up    | About | a     | minute                 | 4369/tcp,                         | 5671/tcp,         | 15671/tcp, | 25672/tcp, | 0.0.0.0:5674->5672/tcp, | 0.0.0.0:15674->15672/tcp | cluster_rabbit-node2_1 |
+   | 38bd7f60e889 | haproxy:latest      | /docker-entrypoint.… |      41 | minutes | ago    | Up    | About | a     | minute                 | 0.0.0.0:5672->5672/tcp            | cluster_haproxy_1 |            |            |                         |                          |                        |
+
+** Sync cookies
+   #+BEGIN_SRC sh :dir /docker:876e25aec4f6:/
+     cat var/lib/rabbitmq/.erlang.cookie
+   #+END_SRC
+
+   #+RESULTS:
+   : JAPZUWNWIDRMTPNLAZCO
+
+   #+BEGIN_SRC sh :dir /docker:a02039b9655c:/
+     echo 'JAPZUWNWIDRMTPNLAZCO' > var/lib/rabbitmq/.erlang.cookie
+   #+END_SRC
+
+   #+RESULTS:
+
+** Restart services
+
+** Set policy (node1)
+   #+BEGIN_SRC sh :dir /docker:876e25aec4f6:/
+     rabbitmqctl set_policy ha-all "" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
+   #+END_SRC
+
+** Check status (node1)
+   #+BEGIN_SRC sh :dir /docker:876e25aec4f6:/
+     rabbitmqctl list_policies
+   #+END_SRC
+
+** Stop app (node2)
+   #+BEGIN_SRC sh :dir /docker:a02039b9655c:/
+     rabbitmqctl stop_app
+   #+END_SRC
+
+** Join cluster (node2)
+   Important data from node 2 will be removed
+   #+BEGIN_SRC sh :dir /docker:a02039b9655c:/
+     rabbitmqctl join_cluster rabbit@876e25aec4f6
+   #+END_SRC
+
+
+** Start app (node2)
+   #+BEGIN_SRC sh :dir /docker:a02039b9655c:/
+     rabbitmqctl start_app
+   #+END_SRC
+
+
+
+

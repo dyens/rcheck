@@ -14,5 +14,5 @@ channel = connection.channel()
 
 
 for customer in range(10):
-    channel.queue_delete('sm_dynamic_queue_%s' % str(customer))
+    channel.queue_delete('sm_queue_%s' % str(customer))
 

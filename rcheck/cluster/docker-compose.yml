@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  rabbit-node1:
+    image: rabbitmq:management
+    networks:
+      - rabbit-claster
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+  rabbit-node2:
+    image: rabbitmq:management
+    networks:
+      - rabbit-claster
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+
+  haproxy:
+    image: haproxy:latest
+    networks:
+      - rabbit-claster
+    ports:
+      - "5672:5672"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+
+
+
+networks:
+  rabbit-claster:
