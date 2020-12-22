@@ -32,10 +32,11 @@
    #+RESULTS:
 
 ** Restart services
-
+   
 ** Set policy (node1)
    #+BEGIN_SRC sh :dir /docker:876e25aec4f6:/
      rabbitmqctl set_policy ha-all "" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
+     # rabbitmqctl set_policy ha-all "" '{"ha-mode":"all"}'
    #+END_SRC
 
 ** Check status (node1)
@@ -59,7 +60,6 @@
    #+BEGIN_SRC sh :dir /docker:a02039b9655c:/
      rabbitmqctl start_app
    #+END_SRC
-
 
 * Start-stop nodes
 
